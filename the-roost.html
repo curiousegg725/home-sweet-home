@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Roost 🐔</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#E8A020;--gold-l:#FEF9E7;--gold-m:#F5CC80;--gold-d:#A06C0A;
+  --terra:#C2714F;--terra-l:#FDF0EB;--terra-m:#E8A88C;
+  --sage:#6B9E70;--sage-l:#EEF5EF;--sage-m:#A8CCА9;
+  --sky:#5B9EBF;--sky-l:#E8F4F8;--sky-m:#9DCCE0;
+  --lav:#8B7EC4;--lav-l:#F0EDF8;--lav-m:#BDB3DC;
+  --warm:#D4956A;--warm-l:#FDF4EE;
+  --bg:#FFFDF5;--card:#FFFFFF;--text:#3D2C15;--muted:#9B8060;
+  --border:#F0E4CC;--radius:18px;--radius-sm:10px;--radius-pill:100px;
+  --shadow:0 4px 20px rgba(232,160,32,0.10);--shadow-h:0 8px 32px rgba(232,160,32,0.18);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+button,input,select,textarea{font-family:'Nunito',sans-serif}
+
+/* HEADER */
+.header{background:white;border-bottom:1.5px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(232,160,32,0.08)}
+.logo{font-size:1.2rem;font-weight:800;color:var(--terra);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo span{font-size:1.5rem}
+.nav{display:flex;gap:3px;flex-wrap:wrap}
+.nav-btn{border:none;background:transparent;padding:7px 14px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;color:var(--muted);transition:all 0.2s;cursor:pointer;white-space:nowrap}
+.nav-btn:hover{background:var(--gold-l);color:var(--gold-d)}
+.nav-btn.active{background:var(--gold-l);color:var(--gold-d)}
+.header-actions{display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--gold-l);color:var(--gold-d);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s}
+.icon-btn:hover{background:var(--gold);color:white}
+
+/* LAYOUT */
+.section{display:none;padding:1.5rem;max-width:1100px;margin:0 auto}
+.section.active{display:block}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:1.4rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius-pill);padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--gold);color:white}
+.btn-primary:hover{background:var(--gold-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,160,32,0.35)}
+.btn-ghost{background:var(--gold-l);color:var(--gold-d)}
+.btn-ghost:hover{background:var(--gold-m);color:var(--gold-d)}
+.btn-sage{background:var(--sage-l);color:var(--sage)}
+.btn-sage:hover{background:var(--sage);color:white}
+.btn-terra{background:var(--terra-l);color:var(--terra)}
+.btn-terra:hover{background:var(--terra);color:white}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-cancel{border:1.5px solid var(--border);background:white;color:var(--muted);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-cancel:hover{background:var(--border)}
+
+/* FORMS */
+.form-group{margin-bottom:1rem}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;display:block}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;background:white}
+.form-input:focus{border-color:var(--gold)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ===== CALENDAR ===== */
+.cal-controls{display:flex;align-items:center;gap:10px}
+.cal-month{font-size:1rem;font-weight:800;min-width:170px;text-align:center}
+.cal-wrap{background:white;border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);background:var(--gold-l)}
+.cal-day-name{padding:10px;text-align:center;font-size:11px;font-weight:700;color:var(--gold-d);text-transform:uppercase;letter-spacing:0.05em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:88px;padding:6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+.cal-cell:hover{background:var(--gold-l)}
+.cal-cell.other-month{opacity:0.35}
+.cal-cell.today .cal-date{background:var(--terra);color:white;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center}
+.cal-date{font-size:13px;font-weight:700;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin-bottom:3px}
+.cal-events{display:flex;flex-direction:column;gap:2px}
+.cal-ev{font-size:11px;font-weight:600;padding:2px 5px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-ev:hover{filter:brightness(0.9)}
+.family-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.fam-chip{display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:var(--radius-pill);border:1.5px solid;font-size:12px;font-weight:700}
+.cal-footer{display:flex;gap:8px;flex-wrap:wrap;padding-top:1rem}
+
+/* ===== MEALS ===== */
+.meals-grid{display:grid;grid-template-columns:80px repeat(7,1fr);border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);background:white;box-shadow:var(--shadow)}
+.meals-hcell{padding:8px 4px;text-align:center;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--gold-d);background:var(--gold-l)}
+.meal-row-lbl{padding:10px 6px;font-size:11px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;border-right:1.5px solid var(--border);border-bottom:1px solid var(--border);background:#FAFAF7;text-align:center;flex-direction:column;gap:2px}
+.meal-cell{padding:6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:58px;cursor:pointer;transition:background 0.15s;font-size:12px}
+.meal-cell:hover{background:var(--gold-l)}
+.meal-empty{font-size:11px;color:#DDD;display:flex;align-items:center;justify-content:center;height:46px}
+.meal-text{color:var(--text);line-height:1.4}
+.meal-note{font-size:10px;color:var(--muted);margin-top:2px}
+.meals-week-nav{display:flex;align-items:center;gap:10px}
+.meals-week-lbl{font-size:13px;font-weight:700;min-width:200px;text-align:center}
+
+/* ===== TASKS ===== */
+.tasks-tabs{display:flex;gap:4px;background:var(--terra-l);padding:4px;border-radius:var(--radius-pill);margin-bottom:1.25rem;width:fit-content}
+.task-tab{border:none;background:transparent;padding:7px 18px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;color:var(--terra);cursor:pointer;transition:all 0.2s}
+.task-tab.active{background:white;box-shadow:0 2px 8px rgba(194,113,79,0.15)}
+.task-tab:hover:not(.active){background:rgba(255,255,255,0.5)}
+
+.overall-progress{margin-bottom:1.25rem}
+.prog-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.prog-bar-bg{height:8px;background:var(--border);border-radius:10px;overflow:hidden}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--terra));border-radius:10px;transition:width 0.5s ease}
+
+/* Subsections */
+.subsection{background:white;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.sub-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none;transition:background 0.15s}
+.sub-header:hover{background:var(--gold-l)}
+.sub-header-left{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px}
+.sub-icon{font-size:18px}
+.sub-count{font-size:12px;color:var(--muted);font-weight:600}
+.sub-chevron{font-size:12px;color:var(--muted);transition:transform 0.2s}
+.sub-body{padding:0 14px 12px;display:none}
+.sub-body.open{display:block}
+.sub-tasks{display:flex;flex-direction:column;gap:6px;padding-top:10px}
+
+.task-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:var(--radius-sm);border:1.5px solid var(--border);transition:all 0.2s}
+.task-item.done{opacity:0.45}
+.task-item.done .task-name{text-decoration:line-through}
+.task-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:11px}
+.task-check:hover{border-color:var(--gold)}
+.task-check.checked{background:var(--gold);border-color:var(--gold);color:white}
+.task-name{flex:1;font-size:13px;font-weight:600}
+.task-del{border:none;background:none;color:#CCC;font-size:16px;cursor:pointer;padding:0 2px;line-height:1;transition:color 0.15s}
+.task-del:hover{color:var(--terra)}
+
+.sub-add-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.sub-add-inp{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:7px 14px;font-size:13px;color:var(--text);outline:none}
+.sub-add-inp:focus{border-color:var(--gold)}
+
+.add-subsection-row{display:flex;gap:8px;margin-top:1rem;align-items:center}
+.add-sub-inp{border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:8px 16px;font-size:13px;color:var(--text);outline:none;width:220px}
+.add-sub-inp:focus{border-color:var(--sage)}
+
+/* ===== SHOPPING ===== */
+.shop-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.shop-add-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.shop-inp{flex:1;min-width:160px;border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:9px 16px;font-size:14px;color:var(--text);outline:none;background:white}
+.shop-inp:focus{border-color:var(--sage)}
+.shop-cat-sel{border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:9px 12px;font-size:13px;background:white;color:var(--muted);outline:none;cursor:pointer}
+.shop-cat-sel:focus{border-color:var(--sage)}
+
+.shop-category{margin-bottom:1.25rem}
+.shop-cat-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;padding-left:4px}
+.shop-items{display:flex;flex-direction:column;gap:6px}
+.shop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:white;border-radius:var(--radius-sm);border:1.5px solid var(--border);transition:all 0.2s}
+.shop-item.checked-item{opacity:0.45}
+.shop-item.checked-item .shop-item-text{text-decoration:line-through}
+.shop-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:12px}
+.shop-check:hover{border-color:var(--sage)}
+.shop-check.checked{background:var(--sage);border-color:var(--sage);color:white}
+.shop-item-text{flex:1;font-size:14px;font-weight:600}
+.shop-item-del{border:none;background:none;color:#CCC;font-size:16px;cursor:pointer;line-height:1;transition:color 0.15s}
+.shop-item-del:hover{color:var(--terra)}
+.shop-empty{text-align:center;padding:2rem;color:var(--muted);font-size:14px;font-style:italic}
+.shop-stats{display:flex;gap:12px;margin-bottom:1rem;flex-wrap:wrap}
+.shop-stat{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 16px;font-size:13px;font-weight:700;color:var(--muted)}
+.shop-stat strong{color:var(--text);font-size:16px;display:block}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(61,44,21,0.35);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex;animation:fadeIn 0.2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:var(--radius);padding:1.5rem;width:92%;max-width:460px;box-shadow:0 20px 60px rgba(61,44,21,0.2);animation:slideUp 0.25s;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
+.person-picker{display:flex;flex-wrap:wrap;gap:6px}
+.person-opt{padding:6px 14px;border-radius:var(--radius-pill);border:2px solid transparent;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.person-opt.sel{border-color:rgba(0,0,0,0.2);transform:scale(1.05)}
+
+/* SETTINGS */
+.fam-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.color-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,0.08)}
+.mem-inp{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);outline:none}
+.mem-inp:focus{border-color:var(--gold)}
+.google-box{background:var(--sky-l);border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;font-size:13px;line-height:1.7;color:#1A4C6E}
+.google-box ol{margin:0.5rem 0 0 1.2rem}
+.google-box a{color:var(--sky);font-weight:700}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:10px 22px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+@media(max-width:680px){
+  .nav-btn{padding:6px 9px;font-size:12px}
+  .logo{font-size:1rem}
+  .meals-grid{overflow-x:auto}
+  .form-row{grid-template-columns:1fr}
+  .sec-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><span>🐔</span> <span id="app-name-display">The Roost</span></div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showSection('calendar')">📅 Calendar</button>
+    <button class="nav-btn" onclick="showSection('meals')">🍳 Meals</button>
+    <button class="nav-btn" onclick="showSection('tasks')">✨ Tasks</button>
+    <button class="nav-btn" onclick="showSection('shopping')">🛒 Shopping</button>
+  </nav>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<!-- CALENDAR -->
+<section class="section active" id="sec-calendar">
+  <div class="sec-header">
+    <div class="sec-title">📅 Family Calendar</div>
+    <div class="cal-controls">
+      <button class="btn btn-ghost btn-sm" onclick="calNav(-1)">‹ Prev</button>
+      <span class="cal-month" id="cal-month-label"></span>
+      <button class="btn btn-ghost btn-sm" onclick="calNav(1)">Next ›</button>
+    </div>
+  </div>
+  <div class="family-legend" id="family-legend"></div>
+  <div class="cal-wrap">
+    <div class="cal-days-header">
+      <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div>
+      <div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div>
+      <div class="cal-day-name">Sat</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+  <div class="cal-footer">
+    <button class="btn btn-primary" onclick="openAddEvent()">🥚 Add Event</button>
+    <button class="btn btn-ghost" onclick="exportICS()">⬇ Export for Apple Calendar</button>
+    <button class="btn btn-ghost" onclick="openGoogleSetup()">🔗 Google Calendar Setup</button>
+  </div>
+</section>
+
+<!-- MEALS -->
+<section class="section" id="sec-meals">
+  <div class="sec-header">
+    <div class="sec-title">🍳 Weekly Meal Planner</div>
+    <div class="meals-week-nav">
+      <button class="btn btn-ghost btn-sm" onclick="mealsNav(-1)">‹ Prev</button>
+      <span class="meals-week-lbl" id="meals-week-lbl"></span>
+      <button class="btn btn-ghost btn-sm" onclick="mealsNav(1)">Next ›</button>
+    </div>
+  </div>
+  <div id="meals-grid" class="meals-grid"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem">
+    <button class="btn btn-sage" onclick="addMealsToShoppingList()">🛒 Add Ingredients to Shopping List</button>
+    <button class="btn btn-terra" onclick="clearWeekMeals()">🗑 Clear Week</button>
+  </div>
+</section>
+
+<!-- TASKS -->
+<section class="section" id="sec-tasks">
+  <div class="sec-header">
+    <div class="sec-title">✨ Tasks & Chores</div>
+    <button class="btn btn-ghost btn-sm" onclick="resetCompletions()">↺ Reset All</button>
+  </div>
+  <div class="tasks-tabs">
+    <button class="task-tab active" onclick="setTaskTab('daily')">☀️ Daily</button>
+    <button class="task-tab" onclick="setTaskTab('weekly')">📆 Weekly</button>
+    <button class="task-tab" onclick="setTaskTab('monthly')">🌙 Monthly</button>
+  </div>
+  <div class="overall-progress">
+    <div class="prog-label" id="prog-label"></div>
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-bar"></div></div>
+  </div>
+  <div id="subsections-list"></div>
+  <div class="add-subsection-row">
+    <input class="add-sub-inp" id="new-sub-inp" placeholder="New section name (e.g. Work, Garden)..." onkeydown="if(event.key==='Enter')addSubsection()">
+    <button class="btn btn-sage btn-sm" onclick="addSubsection()">＋ Add Section</button>
+  </div>
+</section>
+
+<!-- SHOPPING -->
+<section class="section" id="sec-shopping">
+  <div class="sec-header">
+    <div class="sec-title">🛒 Shopping List</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="clearCheckedShop()">✓ Clear Checked</button>
+      <button class="btn btn-terra btn-sm" onclick="clearAllShop()">🗑 Clear All</button>
+    </div>
+  </div>
+  <div class="shop-add-row">
+    <input class="shop-inp" id="shop-item-inp" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem()">
+    <select class="shop-cat-sel" id="shop-cat-sel">
+      <option value="Produce">🥦 Produce</option>
+      <option value="Dairy & Eggs">🥚 Dairy & Eggs</option>
+      <option value="Meat & Fish">🥩 Meat & Fish</option>
+      <option value="Pantry">🥫 Pantry</option>
+      <option value="Frozen">🧊 Frozen</option>
+      <option value="Snacks">🍿 Snacks</option>
+      <option value="Drinks">🥤 Drinks</option>
+      <option value="Household">🧹 Household</option>
+      <option value="Personal Care">🧴 Personal Care</option>
+      <option value="Kids">🐣 Kids</option>
+      <option value="Pets">🐾 Pets</option>
+      <option value="Other">📦 Other</option>
+    </select>
+    <button class="btn btn-primary" onclick="addShopItem()">＋ Add</button>
+  </div>
+  <div class="shop-stats" id="shop-stats"></div>
+  <div id="shop-list"></div>
+</section>
+
+<!-- EVENT MODAL -->
+<div class="overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-title">🗓 <span id="ev-modal-title">New Event</span></div>
+    <input type="hidden" id="ev-edit-id">
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="ev-title" placeholder="e.g. Soccer practice"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="ev-date" type="date"></div>
+      <div class="form-group"><label class="form-label">End Date (opt)</label><input class="form-input" id="ev-end-date" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Time (opt)</label><input class="form-input" id="ev-time" type="time"></div>
+      <div class="form-group"><label class="form-label">End Time (opt)</label><input class="form-input" id="ev-end-time" type="time"></div>
+    </div>
+    <div class="form-group"><label class="form-label">For</label><div class="person-picker" id="person-picker"></div></div>
+    <div class="form-group"><label class="form-label">Notes (opt)</label><textarea class="form-input" id="ev-notes" rows="2" placeholder="Extra details..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('event-modal')">Cancel</button>
+      <button id="ev-del-btn" class="btn btn-terra btn-sm" style="display:none" onclick="deleteEvent()">Delete</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Save 🥚</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEAL MODAL -->
+<div class="overlay" id="meal-modal">
+  <div class="modal">
+    <div class="modal-title">🍳 <span id="meal-modal-title">Edit Meal</span></div>
+    <input type="hidden" id="meal-key">
+    <div class="form-group"><label class="form-label">Meal / Recipe</label><input class="form-input" id="meal-inp" placeholder="e.g. Chicken soup"></div>
+    <div class="form-group"><label class="form-label">Ingredient notes (will appear on shopping list)</label><textarea class="form-input" id="meal-notes" rows="2" placeholder="e.g. carrots, celery, noodles"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('meal-modal')">Cancel</button>
+      <button class="btn btn-terra btn-sm" onclick="clearMeal()">Clear</button>
+      <button class="btn btn-primary" onclick="saveMeal()">Save 🍳</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settings-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">⚙️ Settings</div>
+    <div class="form-group">
+      <label class="form-label">App Name</label>
+      <input class="form-input" id="app-name-inp" placeholder="The Roost" style="max-width:260px">
+    </div>
+    <div style="margin-bottom:1rem">
+      <div class="form-label" style="margin-bottom:10px">Family Members & Colors</div>
+      <div id="fam-settings"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('settings-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save 💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOOGLE MODAL -->
+<div class="overlay" id="google-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">🔗 Google Calendar Setup</div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:0.75rem">To connect Google Calendar, you'll need a free Google Cloud API key:</p>
+    <div class="google-box">
+      <ol>
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li>
+        <li>Create a new project</li>
+        <li>Enable the <strong>Google Calendar API</strong></li>
+        <li>Go to Credentials → Create OAuth 2.0 Client ID → Web application</li>
+        <li>Add your GitHub Pages URL as an authorized origin<br><code style="background:rgba(0,0,0,0.08);padding:1px 6px;border-radius:4px">https://yourusername.github.io</code></li>
+        <li>Copy your Client ID below</li>
+      </ol>
+    </div>
+    <div class="form-group" style="margin-top:1rem"><label class="form-label">Google OAuth Client ID</label><input class="form-input" id="google-cid" placeholder="xxxx.apps.googleusercontent.com"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('google-modal')">Close</button>
+      <button class="btn btn-primary" onclick="connectGoogle()">Connect 🔗</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DEFAULTS =====
+const DEFAULT_FAMILY = [
+  {name:'Me',      color:'#E8A020',light:'#FEF9E7'},
+  {name:'Partner', color:'#C2714F',light:'#FDF0EB'},
+  {name:'Child 1', color:'#6B9E70',light:'#EEF5EF'},
+  {name:'Child 2', color:'#5B9EBF',light:'#E8F4F8'},
+  {name:'Child 3', color:'#8B7EC4',light:'#F0EDF8'},
+  {name:'Everyone',color:'#D4956A',light:'#FDF4EE'},
+];
+
+const SUB_ICONS = {home:'🏠',kids:'🐣',family:'🪺',personal:'🌟',pets:'🐾'};
+
+function makeDefaultSubs(freq){
+  const home = {
+    daily:  ['Make all beds','Wipe kitchen counters','Load/unload dishwasher','Sweep or vacuum main area','Quick bathroom wipe-down','Tidy living room','Wipe stovetop','Take out trash if full'],
+    weekly: ['Mop all floors','Deep clean bathrooms','Vacuum all rooms','Wipe down appliances','Clean mirrors & glass','Dust all surfaces','Clean microwave inside'],
+    monthly:['Deep clean oven','Clean windows inside & out','Clean behind fridge & stove','Dust ceiling fans & vents','Wipe down cabinet fronts','Deep clean fridge'],
+  };
+  const kids = {
+    daily:  ['Check backpacks','Pack lunches','Homework check','Tidy kids\' rooms'],
+    weekly: ['Kids\' laundry — wash & put away','Change kids\' bed sheets','Organize kids\' activity bags'],
+    monthly:['Organize kids\' rooms','Check kids\' clothing sizes','Clean kids\' toys'],
+  };
+  const family = {
+    daily:  [],
+    weekly: ['Grocery shopping','Meal prep for the week','Family check-in'],
+    monthly:['Check pantry & expiry dates','Family calendar review','Plan upcoming activities'],
+  };
+  const personal = {
+    daily:  [],
+    weekly: ['Personal laundry','Change bed sheets','Self-care time 🛁'],
+    monthly:['Review budget','Schedule any appointments','Personal goals check-in'],
+  };
+  const pets = {
+    daily:  ['Feed pets','Refresh water bowls','Quick litter/cage clean'],
+    weekly: ['Deep clean pet area','Wash pet bedding','Brush pets'],
+    monthly:['Flea & tick treatment','Vet check reminder','Stock up on pet supplies'],
+  };
+  const all = {home,kids,family,personal,pets};
+  return ['home','kids','family','personal','pets'].map(id=>({
+    id,
+    name: id.charAt(0).toUpperCase()+id.slice(1),
+    icon: SUB_ICONS[id],
+    open: id==='home',
+    tasks: (all[id][freq]||[]).map((t,i)=>({id:`${id[0]}${freq[0]}${i}`,text:t})),
+  }));
+}
+
+const MEAL_ROWS=['breakfast','lunch','dinner','snacks'];
+const MEAL_ICONS={breakfast:'☀️',lunch:'🌤',dinner:'🌙',snacks:'🐣'};
+
+let state = {
+  appName:'The Roost',
+  family: JSON.parse(JSON.stringify(DEFAULT_FAMILY)),
+  events: [],
+  meals: {},
+  tasks: {
+    daily: makeDefaultSubs('daily'),
+    weekly: makeDefaultSubs('weekly'),
+    monthly: makeDefaultSubs('monthly'),
+  },
+  completions: {},
+  shopping: [],
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+  mealsWeekOffset: 0,
+  taskTab: 'daily',
+  googleClientId: '',
+};
+
+function loadState(){
+  try{
+    const s=localStorage.getItem('roost-v2');
+    if(s){
+      const parsed=JSON.parse(s);
+      // merge carefully so new defaults appear if missing
+      state=Object.assign(state,parsed);
+      if(!state.shopping) state.shopping=[];
+      ['daily','weekly','monthly'].forEach(f=>{
+        if(!state.tasks[f]) state.tasks[f]=makeDefaultSubs(f);
+      });
+    }
+  }catch(e){}
+}
+
+function saveState(){
+  try{localStorage.setItem('roost-v2',JSON.stringify(state));}catch(e){}
+}
+
+// ===== NAV =====
+function showSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  const labels={calendar:'Calendar',meals:'Meals',tasks:'Tasks',shopping:'Shopping'};
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.textContent.toLowerCase().includes(name.substring(0,3))) b.classList.add('active');
+  });
+  if(name==='calendar') renderCalendar();
+  if(name==='meals') renderMeals();
+  if(name==='tasks') renderTasks();
+  if(name==='shopping') renderShopping();
+}
+
+// ===== CALENDAR =====
+function calNav(d){
+  state.calMonth+=d;
+  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  saveState(); renderCalendar();
+}
+
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function renderCalendar(){
+  const {calYear,calMonth,family,events}=state;
+  document.getElementById('cal-month-label').textContent=MONTHS[calMonth]+' '+calYear;
+  document.getElementById('family-legend').innerHTML=family.map(f=>
+    `<div class="fam-chip" style="background:${f.light};color:${f.color};border-color:${f.color}30">
+      <span style="width:9px;height:9px;border-radius:50%;background:${f.color};display:inline-block"></span>${f.name}
+    </div>`).join('');
+  const grid=document.getElementById('cal-grid');
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const todayStr=fmtDate(new Date());
+  let html='';
+  for(let i=firstDay-1;i>=0;i--)
+    html+=`<div class="cal-cell other-month"><div class="cal-date">${daysInPrev-i}</div></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${calYear}-${pad(calMonth+1)}-${pad(d)}`;
+    const isToday=ds===todayStr;
+    const evs=events.filter(e=>e.date===ds||(e.endDate&&e.date<=ds&&e.endDate>=ds));
+    html+=`<div class="cal-cell${isToday?' today':''}" onclick="openAddEvent('${ds}')">
+      <div class="cal-date">${d}</div>
+      <div class="cal-events">${evs.slice(0,3).map(e=>{const m=family[e.personIdx]||family[0];
+        return`<div class="cal-ev" style="background:${m.light};color:${m.color}" onclick="event.stopPropagation();openEditEvent('${e.id}')">${e.time?e.time+' ':''}${e.title}</div>`;
+      }).join('')}${evs.length>3?`<div style="font-size:10px;color:var(--muted);padding:1px 5px">+${evs.length-3} more</div>`:''}</div>
+    </div>`;
+  }
+  const rem=(7-(firstDay+daysInMonth)%7)%7;
+  for(let d=1;d<=rem;d++) html+=`<div class="cal-cell other-month"><div class="cal-date">${d}</div></div>`;
+  grid.innerHTML=html;
+}
+
+function openAddEvent(dateStr){
+  document.getElementById('ev-modal-title').textContent='New Event';
+  document.getElementById('ev-edit-id').value='';
+  document.getElementById('ev-title').value='';
+  document.getElementById('ev-date').value=dateStr||fmtDate(new Date());
+  document.getElementById('ev-end-date').value='';
+  document.getElementById('ev-time').value='';
+  document.getElementById('ev-end-time').value='';
+  document.getElementById('ev-notes').value='';
+  document.getElementById('ev-del-btn').style.display='none';
+  renderPersonPicker(0);
+  openModal('event-modal');
+}
+
+function openEditEvent(id){
+  const ev=state.events.find(e=>e.id===id);if(!ev)return;
+  document.getElementById('ev-modal-title').textContent='Edit Event';
+  document.getElementById('ev-edit-id').value=id;
+  document.getElementById('ev-title').value=ev.title;
+  document.getElementById('ev-date').value=ev.date;
+  document.getElementById('ev-end-date').value=ev.endDate||'';
+  document.getElementById('ev-time').value=ev.time||'';
+  document.getElementById('ev-end-time').value=ev.endTime||'';
+  document.getElementById('ev-notes').value=ev.notes||'';
+  document.getElementById('ev-del-btn').style.display='inline-flex';
+  renderPersonPicker(ev.personIdx||0);
+  openModal('event-modal');
+}
+
+function renderPersonPicker(sel){
+  document.getElementById('person-picker').innerHTML=state.family.map((f,i)=>
+    `<div class="person-opt${i===sel?' sel':''}" data-idx="${i}"
+      style="background:${f.light};color:${f.color};border-color:${i===sel?f.color:'transparent'}"
+      onclick="selectPerson(${i})">${f.name}</div>`).join('');
+}
+
+function selectPerson(idx){
+  document.querySelectorAll('.person-opt').forEach((el,i)=>{
+    const f=state.family[i];
+    el.classList.toggle('sel',i===idx);
+    el.style.borderColor=i===idx?f.color:'transparent';
+  });
+}
+
+function getSelPerson(){const el=document.querySelector('.person-opt.sel');return el?parseInt(el.dataset.idx):0;}
+
+function saveEvent(){
+  const title=document.getElementById('ev-title').value.trim();
+  if(!title){toast('Please add a title 🐔');return;}
+  const id=document.getElementById('ev-edit-id').value;
+  const ev={id:id||Date.now()+'',title,date:document.getElementById('ev-date').value,
+    endDate:document.getElementById('ev-end-date').value||null,
+    time:document.getElementById('ev-time').value||null,
+    endTime:document.getElementById('ev-end-time').value||null,
+    notes:document.getElementById('ev-notes').value||null,
+    personIdx:getSelPerson()};
+  if(id) state.events=state.events.map(e=>e.id===id?ev:e);
+  else state.events.push(ev);
+  saveState();closeModal('event-modal');renderCalendar();toast('Event saved! 🗓');
+}
+
+function deleteEvent(){
+  state.events=state.events.filter(e=>e.id!==document.getElementById('ev-edit-id').value);
+  saveState();closeModal('event-modal');renderCalendar();toast('Event removed');
+}
+
+function exportICS(){
+  if(!state.events.length){toast('No events to export yet!');return;}
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//The Roost//EN\r\n';
+  state.events.forEach(ev=>{
+    const dt=ev.date.replace(/-/g,'');const tm=ev.time?'T'+ev.time.replace(':','')+'00':'';
+    ics+=`BEGIN:VEVENT\r\nUID:${ev.id}@theroost\r\nDTSTART:${dt}${tm}\r\n`;
+    if(ev.endDate)ics+=`DTEND:${ev.endDate.replace(/-/g,'')}${ev.endTime?'T'+ev.endTime.replace(':','')+'00':''}\r\n`;
+    ics+=`SUMMARY:${ev.title}\r\n`;
+    if(ev.notes)ics+=`DESCRIPTION:${ev.notes}\r\n`;
+    ics+='END:VEVENT\r\n';
+  });
+  ics+='END:VCALENDAR';
+  dl(new Blob([ics],{type:'text/calendar'}),'the-roost-calendar.ics');
+  toast('Exported! Import this file into Apple or Google Calendar 🍎');
+}
+
+// ===== MEALS =====
+function mealsNav(d){state.mealsWeekOffset+=d;saveState();renderMeals();}
+
+function getWeekDates(){
+  const d=new Date(),day=d.getDay();
+  const sun=new Date(d);sun.setDate(d.getDate()-day+(state.mealsWeekOffset*7));
+  return Array.from({length:7},(_,i)=>{const dd=new Date(sun);dd.setDate(sun.getDate()+i);return dd;});
+}
+
+const DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function renderMeals(){
+  const days=getWeekDates();
+  const f=days[0],l=days[6];
+  document.getElementById('meals-week-lbl').textContent=`${MONTH_SHORT[f.getMonth()]} ${f.getDate()} – ${MONTH_SHORT[l.getMonth()]} ${l.getDate()}`;
+  let html=`<div class="meals-hcell" style="background:var(--terra-l)"></div>`;
+  days.forEach((d,i)=>{
+    const isToday=fmtDate(d)===fmtDate(new Date());
+    html+=`<div class="meals-hcell" style="${isToday?'background:var(--terra-l);color:var(--terra)':''}">${DAY_NAMES[i]}<br><span style="font-size:15px;font-weight:800">${d.getDate()}</span></div>`;
+  });
+  MEAL_ROWS.forEach(row=>{
+    html+=`<div class="meal-row-lbl"><span style="font-size:16px">${MEAL_ICONS[row]}</span><span>${row.charAt(0).toUpperCase()+row.slice(1)}</span></div>`;
+    days.forEach(d=>{
+      const key=fmtDate(d)+'-'+row;const m=state.meals[key];
+      html+=`<div class="meal-cell" onclick="openMealModal('${key}','${row}','${fmtDate(d)}')">
+        ${m?`<div class="meal-text">${m.text}</div>${m.notes?`<div class="meal-note">${m.notes}</div>`:''}`:
+          `<div class="meal-empty">＋</div>`}
+      </div>`;
+    });
+  });
+  document.getElementById('meals-grid').innerHTML=html;
+}
+
+function openMealModal(key,row,date){
+  const m=state.meals[key]||{};
+  const d=new Date(date+'T12:00:00');
+  document.getElementById('meal-modal-title').textContent=`${MEAL_ICONS[row]} ${row.charAt(0).toUpperCase()+row.slice(1)} — ${DAY_NAMES[d.getDay()]} ${d.getDate()}`;
+  document.getElementById('meal-key').value=key;
+  document.getElementById('meal-inp').value=m.text||'';
+  document.getElementById('meal-notes').value=m.notes||'';
+  openModal('meal-modal');
+}
+
+function saveMeal(){
+  const key=document.getElementById('meal-key').value;
+  const text=document.getElementById('meal-inp').value.trim();
+  if(text)state.meals[key]={text,notes:document.getElementById('meal-notes').value.trim()};
+  else delete state.meals[key];
+  saveState();closeModal('meal-modal');renderMeals();toast('Meal saved! 🍳');
+}
+
+function clearMeal(){
+  delete state.meals[document.getElementById('meal-key').value];
+  saveState();closeModal('meal-modal');renderMeals();
+}
+
+function clearWeekMeals(){
+  if(!confirm('Clear all meals for this week?'))return;
+  getWeekDates().forEach(d=>MEAL_ROWS.forEach(r=>{delete state.meals[fmtDate(d)+'-'+r];}));
+  saveState();renderMeals();toast('Week cleared 🗑');
+}
+
+function addMealsToShoppingList(){
+  const days=getWeekDates();let added=0;
+  days.forEach(d=>MEAL_ROWS.forEach(r=>{
+    const m=state.meals[fmtDate(d)+'-'+r];
+    if(m&&m.notes){
+      m.notes.split(/[,\n]/).forEach(i=>{
+        const t=i.trim();
+        if(t&&!state.shopping.find(s=>s.text.toLowerCase()===t.toLowerCase())){
+          state.shopping.push({id:Date.now()+Math.random()+'',text:t,cat:'Other',checked:false});
+          added++;
+        }
+      });
+    }
+  }));
+  saveState();toast(added?`Added ${added} ingredient${added>1?'s':''} to shopping list! 🛒`:'No ingredient notes found — add notes to your meals!');
+}
+
+// ===== TASKS =====
+function setTaskTab(tab){
+  state.taskTab=tab;saveState();
+  document.querySelectorAll('.task-tab').forEach((b,i)=>{b.classList.toggle('active',['daily','weekly','monthly'][i]===tab);});
+  renderTasks();
+}
+
+function getCompKey(subId,taskId){
+  const now=new Date();
+  if(state.taskTab==='daily') return `${state.taskTab}-${subId}-${taskId}-${fmtDate(now)}`;
+  if(state.taskTab==='weekly'){
+    const soy=new Date(now.getFullYear(),0,1);
+    const wk=Math.ceil(((now-soy)/86400000+soy.getDay()+1)/7);
+    return `${state.taskTab}-${subId}-${taskId}-${now.getFullYear()}-w${wk}`;
+  }
+  return `${state.taskTab}-${subId}-${taskId}-${now.getFullYear()}-${now.getMonth()}`;
+}
+
+function renderTasks(){
+  const subs=state.tasks[state.taskTab]||[];
+  let totalTasks=0,doneTasks=0;
+  subs.forEach(sub=>sub.tasks.forEach(t=>{
+    totalTasks++;if(state.completions[getCompKey(sub.id,t.id)])doneTasks++;
+  }));
+  const pct=totalTasks?Math.round(doneTasks/totalTasks*100):0;
+  document.getElementById('prog-label').textContent=`${doneTasks} of ${totalTasks} done — ${pct}%`;
+  document.getElementById('prog-bar').style.width=pct+'%';
+
+  document.getElementById('subsections-list').innerHTML=subs.map(sub=>{
+    const subDone=sub.tasks.filter(t=>state.completions[getCompKey(sub.id,t.id)]).length;
+    return`<div class="subsection">
+      <div class="sub-header" onclick="toggleSub('${sub.id}')">
+        <div class="sub-header-left">
+          <span class="sub-icon">${sub.icon}</span>
+          <span>${sub.name}</span>
+          <span class="sub-count">${subDone}/${sub.tasks.length}</span>
+        </div>
+        <span class="sub-chevron" id="chev-${sub.id}">${sub.open?'▲':'▼'}</span>
+      </div>
+      <div class="sub-body${sub.open?' open':''}" id="subbody-${sub.id}">
+        <div class="sub-tasks">${sub.tasks.map(t=>{
+          const key=getCompKey(sub.id,t.id);const done=!!state.completions[key];
+          return`<div class="task-item${done?' done':''}">
+            <div class="task-check${done?' checked':''}" onclick="toggleTask('${sub.id}','${t.id}')">${done?'✓':''}</div>
+            <span class="task-name">${t.text}</span>
+            <button class="task-del" onclick="deleteTask('${sub.id}','${t.id}')">×</button>
+          </div>`;
+        }).join('')}</div>
+        <div class="sub-add-row">
+          <input class="sub-add-inp" id="sub-inp-${sub.id}" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTaskToSub('${sub.id}')">
+          <button class="btn btn-ghost btn-sm" onclick="addTaskToSub('${sub.id}')">＋</button>
+          <button class="btn btn-terra btn-sm" onclick="deleteSub('${sub.id}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSub(id){
+  const subs=state.tasks[state.taskTab];
+  const sub=subs.find(s=>s.id===id);if(!sub)return;
+  sub.open=!sub.open;saveState();renderTasks();
+}
+
+function toggleTask(subId,taskId){
+  const key=getCompKey(subId,taskId);
+  if(state.completions[key])delete state.completions[key];else state.completions[key]=true;
+  saveState();renderTasks();
+}
+
+function deleteTask(subId,taskId){
+  const sub=state.tasks[state.taskTab].find(s=>s.id===subId);if(!sub)return;
+  sub.tasks=sub.tasks.filter(t=>t.id!==taskId);
+  saveState();renderTasks();
+}
+
+function addTaskToSub(subId){
+  const inp=document.getElementById('sub-inp-'+subId);
+  const text=inp.value.trim();if(!text)return;
+  const sub=state.tasks[state.taskTab].find(s=>s.id===subId);if(!sub)return;
+  sub.tasks.push({id:subId[0]+Date.now(),text});
+  inp.value='';saveState();renderTasks();toast('Task added 🐣');
+}
+
+function addSubsection(){
+  const inp=document.getElementById('new-sub-inp');
+  const name=inp.value.trim();if(!name)return;
+  const id='custom-'+Date.now();
+  const icons=['🌿','⭐','🔧','📚','💼','🎨','🏋️','🌻'];
+  const icon=icons[Math.floor(Math.random()*icons.length)];
+  ['daily','weekly','monthly'].forEach(freq=>{
+    state.tasks[freq].push({id,name,icon,open:true,tasks:[]});
+  });
+  inp.value='';saveState();renderTasks();toast(`"${name}" section added! 🌟`);
+}
+
+function deleteSub(subId){
+  if(!confirm('Remove this section and all its tasks?'))return;
+  ['daily','weekly','monthly'].forEach(freq=>{
+    state.tasks[freq]=state.tasks[freq].filter(s=>s.id!==subId);
+  });
+  saveState();renderTasks();toast('Section removed');
+}
+
+function resetCompletions(){
+  if(!confirm('Reset all completed tasks?'))return;
+  state.completions={};saveState();renderTasks();toast('All tasks reset! Fresh start 🐣');
+}
+
+// ===== SHOPPING =====
+function addShopItem(){
+  const inp=document.getElementById('shop-item-inp');
+  const text=inp.value.trim();if(!text)return;
+  const cat=document.getElementById('shop-cat-sel').value;
+  state.shopping.push({id:Date.now()+Math.random()+'',text,cat,checked:false});
+  inp.value='';saveState();renderShopping();
+}
+
+function toggleShop(id){
+  const item=state.shopping.find(i=>i.id===id);if(item)item.checked=!item.checked;
+  saveState();renderShopping();
+}
+
+function deleteShopItem(id){
+  state.shopping=state.shopping.filter(i=>i.id!==id);saveState();renderShopping();
+}
+
+function clearCheckedShop(){
+  state.shopping=state.shopping.filter(i=>!i.checked);saveState();renderShopping();toast('Checked items cleared ✓');
+}
+
+function clearAllShop(){
+  if(!confirm('Clear the entire shopping list?'))return;
+  state.shopping=[];saveState();renderShopping();toast('Shopping list cleared 🗑');
+}
+
+function renderShopping(){
+  const items=state.shopping;
+  const checked=items.filter(i=>i.checked).length;
+  const total=items.length;
+  document.getElementById('shop-stats').innerHTML=total?`
+    <div class="shop-stat"><strong>${total-checked}</strong>still needed</div>
+    <div class="shop-stat"><strong>${checked}</strong>in cart</div>
+    <div class="shop-stat"><strong>${total}</strong>total</div>
+  `:'';
+
+  if(!total){
+    document.getElementById('shop-list').innerHTML='<div class="shop-empty">🐔 Your nest is fully stocked!<br>Add items above to get started.</div>';
+    return;
+  }
+
+  const byCat={};
+  items.forEach(i=>{if(!byCat[i.cat])byCat[i.cat]=[];byCat[i.cat].push(i);});
+  const catOrder=['Produce','Dairy & Eggs','Meat & Fish','Pantry','Frozen','Snacks','Drinks','Household','Personal Care','Kids','Pets','Other'];
+  const cats=[...catOrder.filter(c=>byCat[c]),...Object.keys(byCat).filter(c=>!catOrder.includes(c))];
+
+  document.getElementById('shop-list').innerHTML=cats.map(cat=>`
+    <div class="shop-category">
+      <div class="shop-cat-label">${cat}</div>
+      <div class="shop-items">${byCat[cat].map(item=>`
+        <div class="shop-item${item.checked?' checked-item':''}">
+          <div class="shop-check${item.checked?' checked':''}" onclick="toggleShop('${item.id}')">${item.checked?'✓':''}</div>
+          <span class="shop-item-text">${item.text}</span>
+          <button class="shop-item-del" onclick="deleteShopItem('${item.id}')">×</button>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ===== SETTINGS =====
+function openSettings(){
+  document.getElementById('app-name-inp').value=state.appName;
+  document.getElementById('fam-settings').innerHTML=state.family.map((f,i)=>`
+    <div class="fam-row">
+      <div class="color-dot" style="background:${f.color}"></div>
+      <input class="mem-inp" data-idx="${i}" value="${f.name}" maxlength="20">
+    </div>`).join('');
+  openModal('settings-modal');
+}
+
+function saveSettings(){
+  document.querySelectorAll('.mem-inp').forEach(inp=>{
+    const i=parseInt(inp.dataset.idx);
+    if(inp.value.trim()) state.family[i].name=inp.value.trim();
+  });
+  const n=document.getElementById('app-name-inp').value.trim();
+  if(n){state.appName=n;document.getElementById('app-name-display').textContent=n;document.title=n+' 🐔';}
+  saveState();closeModal('settings-modal');renderCalendar();toast('Settings saved! 🐔');
+}
+
+// ===== GOOGLE =====
+function openGoogleSetup(){document.getElementById('google-cid').value=state.googleClientId||'';openModal('google-modal');}
+function connectGoogle(){
+  const cid=document.getElementById('google-cid').value.trim();if(!cid){toast('Please enter your Client ID');return;}
+  state.googleClientId=cid;saveState();
+  const scope='https://www.googleapis.com/auth/calendar.readonly';
+  window.open(`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${encodeURIComponent(location.href.split('?')[0])}&response_type=token&scope=${encodeURIComponent(scope)}`,'_blank','width=500,height=600');
+  toast('Google Auth window opened! After authorizing, come back and refresh 🔗');
+}
+
+// ===== HELPERS =====
+function fmtDate(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+function pad(n){return String(n).padStart(2,'0');}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ===== INIT =====
+loadState();
+document.getElementById('app-name-display').textContent=state.appName;
+document.title=state.appName+' 🐔';
+renderCalendar();
+</script>
+</body>
+</html>
