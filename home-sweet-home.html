@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Sweet Home 🏡</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rose:#F06292;--rose-l:#FCE4EC;--rose-m:#F48FB1;
+  --lav:#9575CD;--lav-l:#EDE7F6;--lav-m:#B39DDB;
+  --mint:#66BB6A;--mint-l:#E8F5E9;--mint-m:#A5D6A7;
+  --peach:#FFA726;--peach-l:#FFF3E0;--peach-m:#FFCC80;
+  --sky:#42A5F5;--sky-l:#E3F2FD;--sky-m:#90CAF9;
+  --sun:#FFCA28;--sun-l:#FFFDE7;--sun-m:#FFE082;
+  --bg:#FFF5F7;--card:#FFFFFF;--text:#3D2440;--muted:#9E8EA2;
+  --border:#F3E5F5;--radius:18px;--radius-sm:10px;--radius-pill:100px;
+  --shadow:0 4px 20px rgba(240,98,146,0.10);--shadow-hover:0 8px 32px rgba(240,98,146,0.18);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+button{font-family:'Nunito',sans-serif;cursor:pointer}
+input,select,textarea{font-family:'Nunito',sans-serif}
+
+/* HEADER */
+.header{background:white;border-bottom:1.5px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(240,98,146,0.08)}
+.logo{font-size:1.25rem;font-weight:800;color:var(--rose);display:flex;align-items:center;gap:8px}
+.logo span{font-size:1.4rem}
+.nav{display:flex;gap:4px}
+.nav-btn{border:none;background:transparent;padding:8px 18px;border-radius:var(--radius-pill);font-size:14px;font-weight:700;color:var(--muted);transition:all 0.2s}
+.nav-btn:hover{background:var(--rose-l);color:var(--rose)}
+.nav-btn.active{background:var(--rose-l);color:var(--rose)}
+.header-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--rose-l);color:var(--rose);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.icon-btn:hover{background:var(--rose);color:white;transform:scale(1.05)}
+
+/* LAYOUT */
+.section{display:none;padding:1.5rem;max-width:1100px;margin:0 auto}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);border:1.5px solid var(--border);padding:1.25rem;box-shadow:var(--shadow)}
+.card-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius-pill);padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--rose);color:white}
+.btn-primary:hover{background:#E91E8C;transform:translateY(-1px);box-shadow:0 4px 12px rgba(240,98,146,0.3)}
+.btn-ghost{background:var(--rose-l);color:var(--rose)}
+.btn-ghost:hover{background:var(--rose-m);color:white}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-icon{width:30px;height:30px;border-radius:50%;padding:0;justify-content:center;font-size:14px}
+
+/* SECTION HEADERS */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:1.4rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+
+/* ===== CALENDAR ===== */
+.cal-controls{display:flex;align-items:center;gap:12px}
+.cal-month{font-size:1.1rem;font-weight:800;min-width:180px;text-align:center}
+.cal-grid-wrap{background:white;border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);background:var(--rose-l)}
+.cal-day-name{padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:0.05em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:90px;padding:6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;position:relative}
+.cal-cell:hover{background:#FFF0F5}
+.cal-cell.other-month{opacity:0.4}
+.cal-cell.today .cal-date{background:var(--rose);color:white;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center}
+.cal-date{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;width:26px;height:26px;display:flex;align-items:center;justify-content:center}
+.cal-events{display:flex;flex-direction:column;gap:2px}
+.cal-event-dot{font-size:11px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-event-dot:hover{filter:brightness(0.92)}
+
+.family-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
+.family-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--radius-pill);border:1.5px solid;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.family-chip:hover{transform:translateY(-1px)}
+
+.cal-footer{display:flex;gap:10px;flex-wrap:wrap;padding:1rem 0 0}
+
+/* ===== MEALS ===== */
+.meals-grid{display:grid;grid-template-columns:100px repeat(7,1fr);gap:0;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);background:white;box-shadow:var(--shadow)}
+.meals-header-cell{padding:10px 6px;text-align:center;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--rose);background:var(--rose-l)}
+.meal-row-label{padding:12px 10px;font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;border-right:1.5px solid var(--border);border-bottom:1px solid var(--border);background:#FAFAFA;text-align:center;writing-mode:horizontal-tb}
+.meal-cell{padding:6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:60px;cursor:pointer;transition:background 0.15s;position:relative}
+.meal-cell:hover{background:#FFF5F7}
+.meal-cell-content{font-size:12px;color:var(--text);line-height:1.4;height:100%}
+.meal-cell-empty{font-size:11px;color:#DDD;font-style:italic;display:flex;align-items:center;justify-content:center;height:48px}
+.meals-week-nav{display:flex;align-items:center;gap:12px}
+.meals-week-label{font-size:14px;font-weight:700;min-width:200px;text-align:center}
+.shopping-list-btn{margin-top:1rem}
+
+/* ===== TASKS ===== */
+.tasks-tabs{display:flex;gap:4px;background:var(--lav-l);padding:4px;border-radius:var(--radius-pill);margin-bottom:1.5rem;width:fit-content}
+.task-tab{border:none;background:transparent;padding:8px 20px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;color:var(--lav);transition:all 0.2s;cursor:pointer}
+.task-tab.active{background:white;color:var(--lav);box-shadow:0 2px 8px rgba(149,117,205,0.2)}
+.task-tab:hover:not(.active){background:rgba(255,255,255,0.5)}
+
+.progress-bar-wrap{height:8px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.5rem}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--rose),var(--lav));border-radius:10px;transition:width 0.5s ease}
+.progress-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px}
+
+.tasks-list{display:flex;flex-direction:column;gap:8px}
+.task-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:white;border-radius:var(--radius-sm);border:1.5px solid var(--border);transition:all 0.2s}
+.task-item:hover{border-color:var(--lav-m);box-shadow:0 2px 12px rgba(149,117,205,0.1)}
+.task-item.done{opacity:0.5}
+.task-item.done .task-name{text-decoration:line-through}
+.task-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:12px}
+.task-check:hover{border-color:var(--lav)}
+.task-check.checked{background:var(--lav);border-color:var(--lav);color:white}
+.task-name{flex:1;font-size:14px;font-weight:600}
+.task-del{border:none;background:none;color:#DDD;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;transition:color 0.15s}
+.task-del:hover{color:var(--rose)}
+.add-task-row{display:flex;gap:8px;margin-top:1rem}
+.add-task-input{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:9px 16px;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s}
+.add-task-input:focus{border-color:var(--lav)}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(61,36,64,0.35);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex;animation:fadeIn 0.2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:var(--radius);padding:1.5rem;width:90%;max-width:460px;box-shadow:0 20px 60px rgba(61,36,64,0.2);animation:slideUp 0.25s}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;display:block}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;background:white}
+.form-input:focus{border-color:var(--rose)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.25rem}
+.btn-cancel{border:1.5px solid var(--border);background:white;color:var(--muted);border-radius:var(--radius-pill);padding:8px 18px;font-size:13px;font-weight:700}
+.btn-cancel:hover{background:var(--border)}
+.person-picker{display:flex;flex-wrap:wrap;gap:6px}
+.person-option{padding:6px 14px;border-radius:var(--radius-pill);border:2px solid transparent;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.person-option.selected{border-color:rgba(0,0,0,0.2);transform:scale(1.05)}
+
+/* SETTINGS */
+.settings-section{margin-bottom:1.5rem}
+.family-member-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.color-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(0,0,0,0.1);flex-shrink:0}
+.member-name-input{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;font-weight:600;color:var(--text);outline:none}
+.member-name-input:focus{border-color:var(--rose)}
+.google-setup{background:var(--sky-l);border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;font-size:13px;line-height:1.6;color:#0D47A1}
+.google-setup a{color:var(--sky);font-weight:700}
+.google-setup ol{margin:0.5rem 0 0 1.2rem}
+
+/* SHOPPING LIST */
+.shopping-items{list-style:none;padding:0}
+.shopping-items li{padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;display:flex;gap:8px}
+.shopping-items li::before{content:"◻";color:var(--rose)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:10px 20px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .nav-btn{padding:6px 10px;font-size:12px}
+  .logo{font-size:1rem}
+  .meals-grid{grid-template-columns:60px repeat(7,minmax(60px,1fr));overflow-x:auto}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><span>🏡</span> Home Sweet Home</div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showSection('calendar')">📅 Calendar</button>
+    <button class="nav-btn" onclick="showSection('meals')">🍽 Meals</button>
+    <button class="nav-btn" onclick="showSection('tasks')">✨ Tasks</button>
+  </nav>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<!-- CALENDAR SECTION -->
+<section class="section active" id="sec-calendar">
+  <div class="sec-header">
+    <div class="sec-title">📅 Family Calendar</div>
+    <div class="cal-controls">
+      <button class="btn btn-ghost btn-sm" onclick="calNav(-1)">‹ Prev</button>
+      <span class="cal-month" id="cal-month-label"></span>
+      <button class="btn btn-ghost btn-sm" onclick="calNav(1)">Next ›</button>
+    </div>
+  </div>
+  <div id="family-legend" class="family-legend"></div>
+  <div class="cal-grid-wrap">
+    <div class="cal-days-header">
+      <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div>
+      <div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div>
+      <div class="cal-day-name">Sat</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+  <div class="cal-footer">
+    <button class="btn btn-primary" onclick="openAddEvent()">＋ Add Event</button>
+    <button class="btn btn-ghost" onclick="exportICS()">⬇ Export for Apple Calendar</button>
+    <button class="btn btn-ghost" onclick="openGoogleSetup()">🔗 Google Calendar Setup</button>
+  </div>
+</section>
+
+<!-- MEALS SECTION -->
+<section class="section" id="sec-meals">
+  <div class="sec-header">
+    <div class="sec-title">🍽 Weekly Meal Planner</div>
+    <div class="meals-week-nav">
+      <button class="btn btn-ghost btn-sm" onclick="mealsNav(-1)">‹ Prev</button>
+      <span class="meals-week-label" id="meals-week-label"></span>
+      <button class="btn btn-ghost btn-sm" onclick="mealsNav(1)">Next ›</button>
+    </div>
+  </div>
+  <div id="meals-grid" class="meals-grid"></div>
+  <div class="shopping-list-btn">
+    <button class="btn btn-primary" onclick="openShoppingList()">🛒 Generate Shopping List</button>
+    <button class="btn btn-ghost" onclick="clearWeekMeals()" style="margin-left:8px">🗑 Clear Week</button>
+  </div>
+</section>
+
+<!-- TASKS SECTION -->
+<section class="section" id="sec-tasks">
+  <div class="sec-header">
+    <div class="sec-title">✨ Cleaning & Home Tasks</div>
+    <button class="btn btn-ghost btn-sm" onclick="resetCompletions()">↺ Reset All</button>
+  </div>
+  <div class="tasks-tabs">
+    <button class="task-tab active" onclick="setTaskTab('daily')">☀️ Daily</button>
+    <button class="task-tab" onclick="setTaskTab('weekly')">📆 Weekly</button>
+    <button class="task-tab" onclick="setTaskTab('monthly')">🌙 Monthly</button>
+  </div>
+  <div class="progress-label" id="tasks-progress-label"></div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="tasks-progress-bar"></div></div>
+  <div class="tasks-list" id="tasks-list"></div>
+  <div class="add-task-row">
+    <input class="add-task-input" id="new-task-input" placeholder="Add a new task..." onkeydown="if(event.key==='Enter')addNewTask()">
+    <button class="btn btn-primary" onclick="addNewTask()">＋ Add</button>
+  </div>
+</section>
+
+<!-- MODALS -->
+<!-- Event Modal -->
+<div class="overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-title">🗓 <span id="event-modal-title">New Event</span></div>
+    <input type="hidden" id="event-edit-id">
+    <div class="form-group">
+      <label class="form-label">Event Title</label>
+      <input class="form-input" id="event-title" placeholder="e.g. Soccer practice">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Start Date</label>
+        <input class="form-input" id="event-date" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Date (opt)</label>
+        <input class="form-input" id="event-end-date" type="date">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Start Time (opt)</label>
+        <input class="form-input" id="event-time" type="time">
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Time (opt)</label>
+        <input class="form-input" id="event-end-time" type="time">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">For</label>
+      <div class="person-picker" id="person-picker"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (opt)</label>
+      <textarea class="form-input" id="event-notes" rows="2" placeholder="Any extra details..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('event-modal')">Cancel</button>
+      <button id="event-delete-btn" class="btn btn-ghost btn-sm" style="color:var(--rose);display:none" onclick="deleteEvent()">Delete</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Save Event 💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- Meal Modal -->
+<div class="overlay" id="meal-modal">
+  <div class="modal">
+    <div class="modal-title">🍴 <span id="meal-modal-title">Edit Meal</span></div>
+    <input type="hidden" id="meal-key">
+    <div class="form-group">
+      <label class="form-label">Meal / Recipe</label>
+      <input class="form-input" id="meal-input" placeholder="e.g. Spaghetti bolognese">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (opt)</label>
+      <textarea class="form-input" id="meal-notes" rows="2" placeholder="Ingredients to buy, prep notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('meal-modal')">Cancel</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--rose)" onclick="clearMeal()">Clear</button>
+      <button class="btn btn-primary" onclick="saveMeal()">Save 💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="overlay" id="settings-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title">⚙️ Settings</div>
+    <div class="settings-section">
+      <div class="card-title" style="font-size:13px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted)">Family Members & Colors</div>
+      <div id="family-settings"></div>
+    </div>
+    <div class="settings-section">
+      <div class="card-title" style="font-size:13px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted)">App Name</div>
+      <input class="form-input" id="app-name-input" placeholder="Home Sweet Home" style="max-width:280px">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('settings-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save Settings 💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- Google Setup Modal -->
+<div class="overlay" id="google-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title">🔗 Google Calendar Setup</div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:1rem">To connect Google Calendar, you'll need a free Google Cloud API key. Here's how:</p>
+    <div class="google-setup">
+      <ol>
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a></li>
+        <li>Create a new project (or use an existing one)</li>
+        <li>Enable the <strong>Google Calendar API</strong></li>
+        <li>Go to Credentials → Create OAuth 2.0 Client ID</li>
+        <li>Choose <strong>Web application</strong></li>
+        <li>Add your GitHub Pages URL as an authorized origin<br>(e.g. <code>https://yourusername.github.io</code>)</li>
+        <li>Copy your Client ID and paste it below</li>
+      </ol>
+    </div>
+    <div class="form-group" style="margin-top:1rem">
+      <label class="form-label">Google OAuth Client ID</label>
+      <input class="form-input" id="google-client-id" placeholder="xxxx.apps.googleusercontent.com">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('google-modal')">Close</button>
+      <button class="btn btn-primary" onclick="connectGoogle()">Connect Google Calendar 🔗</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shopping List Modal -->
+<div class="overlay" id="shopping-modal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">🛒 Shopping List</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">Based on meal notes for this week:</p>
+    <ul class="shopping-items" id="shopping-items"></ul>
+    <p style="font-size:12px;color:var(--muted);margin-top:0.75rem;font-style:italic">Tip: Add ingredient notes to your meals to auto-populate this list!</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('shopping-modal')">Close</button>
+      <button class="btn btn-primary" onclick="copyShoppingList()">📋 Copy List</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+const DEFAULT_FAMILY = [
+  {name:'Me',      color:'#F06292',light:'#FCE4EC'},
+  {name:'Partner', color:'#9575CD',light:'#EDE7F6'},
+  {name:'Child 1', color:'#66BB6A',light:'#E8F5E9'},
+  {name:'Child 2', color:'#FFA726',light:'#FFF3E0'},
+  {name:'Child 3', color:'#42A5F5',light:'#E3F2FD'},
+  {name:'Everyone',color:'#FFCA28',light:'#FFFDE7'},
+];
+const DEFAULT_DAILY = [
+  'Make all beds','Wipe kitchen counters','Load / unload dishwasher',
+  'Sweep or vacuum main area','Quick bathroom wipe-down','Tidy living room',
+  'Take out trash if full','Wipe stovetop','Check kids\' backpacks',
+];
+const DEFAULT_WEEKLY = [
+  'Laundry — wash & put away','Mop all floors','Deep clean bathrooms',
+  'Vacuum all rooms','Change bed sheets','Clean mirrors & glass',
+  'Wipe down appliances','Take out recycling & bins','Grocery shopping',
+  'Meal prep for the week','Dust surfaces','Clean microwave inside',
+];
+const DEFAULT_MONTHLY = [
+  'Deep clean oven','Clean windows inside & out','Organize a closet or drawer',
+  'Clean behind fridge & stove','Dust ceiling fans & vents','Descale kettle & coffee maker',
+  'Test smoke & CO detectors','Clean washing machine drum','Organize pantry',
+  'Wipe down cabinet fronts','Deep clean fridge','Check expiry dates in pantry',
+];
+
+let state = {
+  family: [...DEFAULT_FAMILY],
+  events: [],
+  meals: {},
+  tasks: {
+    daily: DEFAULT_DAILY.map((t,i)=>({id:'d'+i,text:t})),
+    weekly: DEFAULT_WEEKLY.map((t,i)=>({id:'w'+i,text:t})),
+    monthly: DEFAULT_MONTHLY.map((t,i)=>({id:'m'+i,text:t})),
+  },
+  completions: {},
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+  mealsWeekOffset: 0,
+  taskTab: 'daily',
+  appName: 'Home Sweet Home',
+  googleClientId: '',
+};
+
+function load(){
+  try{const s=localStorage.getItem('hsh-state');if(s)state=Object.assign(state,JSON.parse(s));}catch(e){}
+}
+function save(){
+  try{localStorage.setItem('hsh-state',JSON.stringify(state));}catch(e){}
+}
+
+// ===== NAVIGATION =====
+function showSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.textContent.toLowerCase().includes(name.substring(0,3))) b.classList.add('active');
+  });
+  if(name==='calendar') renderCalendar();
+  if(name==='meals') renderMeals();
+  if(name==='tasks') renderTasks();
+}
+
+// ===== CALENDAR =====
+function calNav(d){
+  state.calMonth+=d;
+  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  save(); renderCalendar();
+}
+
+function renderCalendar(){
+  const {calYear,calMonth,family,events}=state;
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=months[calMonth]+' '+calYear;
+
+  // Legend
+  const leg=document.getElementById('family-legend');
+  leg.innerHTML=family.map((f,i)=>`
+    <div class="family-chip" style="background:${f.light};color:${f.color};border-color:${f.color}20">
+      <span style="width:10px;height:10px;border-radius:50%;background:${f.color};display:inline-block"></span>${f.name}
+    </div>`).join('');
+
+  const grid=document.getElementById('cal-grid');
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const today=new Date(); const todayStr=fmt(today);
+  let html='';
+
+  // Prev month days
+  for(let i=firstDay-1;i>=0;i--){
+    html+=`<div class="cal-cell other-month"><div class="cal-date">${daysInPrev-i}</div></div>`;
+  }
+  // This month
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=dateStr===todayStr;
+    const dayEvents=events.filter(e=>e.date===dateStr||(e.endDate&&e.date<=dateStr&&e.endDate>=dateStr&&e.date!==dateStr));
+    html+=`<div class="cal-cell${isToday?' today':''}" onclick="openAddEvent('${dateStr}')">
+      <div class="cal-date">${d}</div>
+      <div class="cal-events">${dayEvents.slice(0,3).map(e=>{
+        const mem=family[e.personIdx]||family[0];
+        return `<div class="cal-event-dot" style="background:${mem.light};color:${mem.color}" onclick="event.stopPropagation();openEditEvent('${e.id}')">${e.time?e.time+' ':' '}${e.title}</div>`;
+      }).join('')}${dayEvents.length>3?`<div style="font-size:10px;color:var(--muted);padding-left:4px">+${dayEvents.length-3} more</div>`:''}</div>
+    </div>`;
+  }
+  // Next month
+  const total=firstDay+daysInMonth;
+  const remaining=(7-total%7)%7;
+  for(let d=1;d<=remaining;d++){
+    html+=`<div class="cal-cell other-month"><div class="cal-date">${d}</div></div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function fmt(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+
+function openAddEvent(dateStr){
+  document.getElementById('event-modal-title').textContent='New Event';
+  document.getElementById('event-edit-id').value='';
+  document.getElementById('event-title').value='';
+  document.getElementById('event-date').value=dateStr||fmt(new Date());
+  document.getElementById('event-end-date').value='';
+  document.getElementById('event-time').value='';
+  document.getElementById('event-end-time').value='';
+  document.getElementById('event-notes').value='';
+  document.getElementById('event-delete-btn').style.display='none';
+  renderPersonPicker(0);
+  openModal('event-modal');
+}
+
+function openEditEvent(id){
+  const ev=state.events.find(e=>e.id===id);if(!ev)return;
+  document.getElementById('event-modal-title').textContent='Edit Event';
+  document.getElementById('event-edit-id').value=id;
+  document.getElementById('event-title').value=ev.title;
+  document.getElementById('event-date').value=ev.date;
+  document.getElementById('event-end-date').value=ev.endDate||'';
+  document.getElementById('event-time').value=ev.time||'';
+  document.getElementById('event-end-time').value=ev.endTime||'';
+  document.getElementById('event-notes').value=ev.notes||'';
+  document.getElementById('event-delete-btn').style.display='inline-flex';
+  renderPersonPicker(ev.personIdx||0);
+  openModal('event-modal');
+}
+
+function renderPersonPicker(selected){
+  const pp=document.getElementById('person-picker');
+  pp.innerHTML=state.family.map((f,i)=>`
+    <div class="person-option${i===selected?' selected':''}" data-idx="${i}"
+      style="background:${f.light};color:${f.color};border-color:${i===selected?f.color:'transparent'}"
+      onclick="selectPerson(${i})">${f.name}</div>`).join('');
+}
+
+function selectPerson(idx){
+  document.querySelectorAll('.person-option').forEach((el,i)=>{
+    const f=state.family[i];
+    el.classList.toggle('selected',i===idx);
+    el.style.borderColor=i===idx?f.color:'transparent';
+  });
+}
+
+function getSelectedPerson(){
+  const el=document.querySelector('.person-option.selected');
+  return el?parseInt(el.dataset.idx):0;
+}
+
+function saveEvent(){
+  const title=document.getElementById('event-title').value.trim();
+  if(!title){toast('Please enter a title');return;}
+  const id=document.getElementById('event-edit-id').value;
+  const ev={
+    id:id||Date.now().toString(),
+    title,
+    date:document.getElementById('event-date').value,
+    endDate:document.getElementById('event-end-date').value||null,
+    time:document.getElementById('event-time').value||null,
+    endTime:document.getElementById('event-end-time').value||null,
+    notes:document.getElementById('event-notes').value||null,
+    personIdx:getSelectedPerson(),
+  };
+  if(id) state.events=state.events.map(e=>e.id===id?ev:e);
+  else state.events.push(ev);
+  save(); closeModal('event-modal'); renderCalendar();
+  toast('Event saved! 🗓');
+}
+
+function deleteEvent(){
+  const id=document.getElementById('event-edit-id').value;
+  state.events=state.events.filter(e=>e.id!==id);
+  save(); closeModal('event-modal'); renderCalendar();
+  toast('Event deleted');
+}
+
+function exportICS(){
+  if(!state.events.length){toast('No events to export');return;}
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Home Sweet Home//EN\r\n';
+  state.events.forEach(ev=>{
+    const dt=ev.date.replace(/-/g,'');
+    const tm=ev.time?'T'+ev.time.replace(':','')+'00':'';
+    ics+=`BEGIN:VEVENT\r\nUID:${ev.id}@homesweethome\r\nDTSTART:${dt}${tm}\r\n`;
+    if(ev.endDate) ics+=`DTEND:${ev.endDate.replace(/-/g,'')}${ev.endTime?'T'+ev.endTime.replace(':','')+'00':''}\r\n`;
+    ics+=`SUMMARY:${ev.title}\r\n`;
+    if(ev.notes) ics+=`DESCRIPTION:${ev.notes}\r\n`;
+    ics+='END:VEVENT\r\n';
+  });
+  ics+='END:VCALENDAR';
+  const blob=new Blob([ics],{type:'text/calendar'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='home-calendar.ics';
+  a.click();
+  toast('Calendar exported! Import this file into Apple Calendar or Google Calendar 🍎');
+}
+
+// ===== MEALS =====
+const MEAL_ROWS=['breakfast','lunch','dinner','snacks'];
+const MEAL_ICONS={breakfast:'☀️',lunch:'☁️',dinner:'🌙',snacks:'🍎'};
+
+function getWeekDates(){
+  const d=new Date();
+  const day=d.getDay();
+  const sunday=new Date(d);
+  sunday.setDate(d.getDate()-day+(state.mealsWeekOffset*7));
+  return Array.from({length:7},(_,i)=>{
+    const dd=new Date(sunday);dd.setDate(sunday.getDate()+i);return dd;
+  });
+}
+
+function mealsNav(d){state.mealsWeekOffset+=d;save();renderMeals();}
+
+function renderMeals(){
+  const days=getWeekDates();
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const first=days[0],last=days[6];
+  document.getElementById('meals-week-label').textContent=
+    `${months[first.getMonth()]} ${first.getDate()} – ${months[last.getMonth()]} ${last.getDate()}, ${last.getFullYear()}`;
+
+  let html=`<div class="meals-header-cell" style="background:var(--lav-l)"></div>`;
+  days.forEach((d,i)=>{
+    const isToday=fmt(d)===fmt(new Date());
+    html+=`<div class="meals-header-cell" style="${isToday?'background:var(--rose-l);color:var(--rose)':''}">${dayNames[i]}<br><span style="font-size:14px;font-weight:800">${d.getDate()}</span></div>`;
+  });
+
+  MEAL_ROWS.forEach(row=>{
+    html+=`<div class="meal-row-label">${MEAL_ICONS[row]} ${row.charAt(0).toUpperCase()+row.slice(1)}</div>`;
+    days.forEach(d=>{
+      const key=fmt(d)+'-'+row;
+      const meal=state.meals[key];
+      html+=`<div class="meal-cell" onclick="openMealModal('${key}','${row}','${fmt(d)}')">
+        ${meal?`<div class="meal-cell-content">${meal.text}${meal.notes?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${meal.notes}</div>`:''}` +`</div>`
+        :`<div class="meal-cell-empty">＋</div>`}
+      </div>`;
+    });
+  });
+  document.getElementById('meals-grid').innerHTML=html;
+}
+
+function openMealModal(key,row,date){
+  const meal=state.meals[key]||{text:'',notes:''};
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const d=new Date(date+'T12:00:00');
+  document.getElementById('meal-modal-title').textContent=`${MEAL_ICONS[row]} ${row.charAt(0).toUpperCase()+row.slice(1)} — ${dayNames[d.getDay()]}`;
+  document.getElementById('meal-key').value=key;
+  document.getElementById('meal-input').value=meal.text||'';
+  document.getElementById('meal-notes').value=meal.notes||'';
+  openModal('meal-modal');
+}
+
+function saveMeal(){
+  const key=document.getElementById('meal-key').value;
+  const text=document.getElementById('meal-input').value.trim();
+  if(text) state.meals[key]={text,notes:document.getElementById('meal-notes').value.trim()};
+  else delete state.meals[key];
+  save();closeModal('meal-modal');renderMeals();
+  toast('Meal saved! 🍴');
+}
+
+function clearMeal(){
+  const key=document.getElementById('meal-key').value;
+  delete state.meals[key];
+  save();closeModal('meal-modal');renderMeals();
+}
+
+function clearWeekMeals(){
+  if(!confirm('Clear all meals for this week?'))return;
+  const days=getWeekDates();
+  days.forEach(d=>MEAL_ROWS.forEach(r=>{delete state.meals[fmt(d)+'-'+r];}));
+  save();renderMeals();toast('Week cleared');
+}
+
+function openShoppingList(){
+  const days=getWeekDates();
+  const items=[];
+  days.forEach(d=>MEAL_ROWS.forEach(r=>{
+    const m=state.meals[fmt(d)+'-'+r];
+    if(m&&m.notes) m.notes.split(/[,\n]/).forEach(i=>{const t=i.trim();if(t)items.push(t);});
+    if(m&&m.text) items.push(m.text);
+  }));
+  const ul=document.getElementById('shopping-items');
+  if(!items.length){ul.innerHTML='<li style="color:var(--muted);list-style:none">Add ingredient notes to your meals to populate this list!</li>';
+  }else{ul.innerHTML=[...new Set(items)].map(i=>`<li>${i}</li>`).join('');}
+  openModal('shopping-modal');
+}
+
+function copyShoppingList(){
+  const items=Array.from(document.querySelectorAll('#shopping-items li')).map(li=>li.textContent).join('\n');
+  navigator.clipboard.writeText(items).then(()=>toast('Copied to clipboard! 📋'));
+}
+
+// ===== TASKS =====
+function setTaskTab(tab){
+  state.taskTab=tab;save();
+  document.querySelectorAll('.task-tab').forEach((b,i)=>{
+    b.classList.toggle('active',['daily','weekly','monthly'][i]===tab);
+  });
+  renderTasks();
+}
+
+function getCompletionKey(taskId){
+  const now=new Date();
+  if(state.taskTab==='daily') return `${state.taskTab}-${taskId}-${fmt(now)}`;
+  if(state.taskTab==='weekly'){
+    const startOfYear=new Date(now.getFullYear(),0,1);
+    const week=Math.ceil(((now-startOfYear)/86400000+startOfYear.getDay()+1)/7);
+    return `${state.taskTab}-${taskId}-${now.getFullYear()}-w${week}`;
+  }
+  return `${state.taskTab}-${taskId}-${now.getFullYear()}-${now.getMonth()}`;
+}
+
+function renderTasks(){
+  const tasks=state.tasks[state.taskTab];
+  const done=tasks.filter(t=>state.completions[getCompletionKey(t.id)]).length;
+  const pct=tasks.length?Math.round(done/tasks.length*100):0;
+  document.getElementById('tasks-progress-label').textContent=`${done} of ${tasks.length} done — ${pct}%`;
+  document.getElementById('tasks-progress-bar').style.width=pct+'%';
+  const list=document.getElementById('tasks-list');
+  list.innerHTML=tasks.map(t=>{
+    const key=getCompletionKey(t.id);
+    const isDone=!!state.completions[key];
+    return`<div class="task-item${isDone?' done':''}">
+      <div class="task-check${isDone?' checked':''}" onclick="toggleTask('${t.id}')">${isDone?'✓':''}</div>
+      <span class="task-name">${t.text}</span>
+      <button class="task-del" onclick="deleteTask('${t.id}')">×</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleTask(id){
+  const key=getCompletionKey(id);
+  if(state.completions[key]) delete state.completions[key];
+  else state.completions[key]=true;
+  save();renderTasks();
+}
+
+function deleteTask(id){
+  state.tasks[state.taskTab]=state.tasks[state.taskTab].filter(t=>t.id!==id);
+  save();renderTasks();
+}
+
+function addNewTask(){
+  const inp=document.getElementById('new-task-input');
+  const text=inp.value.trim();if(!text)return;
+  const id=state.taskTab.charAt(0)+Date.now();
+  state.tasks[state.taskTab].push({id,text});
+  inp.value='';save();renderTasks();
+  toast('Task added ✨');
+}
+
+function resetCompletions(){
+  if(!confirm('Reset all completed tasks?'))return;
+  state.completions={};save();renderTasks();toast('All tasks reset!');
+}
+
+// ===== SETTINGS =====
+function openSettings(){
+  const c=document.getElementById('family-settings');
+  c.innerHTML=state.family.map((f,i)=>`
+    <div class="family-member-row">
+      <div class="color-dot" style="background:${f.color}"></div>
+      <input class="member-name-input" data-idx="${i}" value="${f.name}" maxlength="20">
+    </div>`).join('');
+  document.getElementById('app-name-input').value=state.appName||'Home Sweet Home';
+  openModal('settings-modal');
+}
+
+function saveSettings(){
+  document.querySelectorAll('.member-name-input').forEach(inp=>{
+    const i=parseInt(inp.dataset.idx);
+    state.family[i].name=inp.value.trim()||state.family[i].name;
+  });
+  const name=document.getElementById('app-name-input').value.trim();
+  if(name){
+    state.appName=name;
+    document.querySelector('.logo').innerHTML=`<span>🏡</span> ${name}`;
+    document.title=name;
+  }
+  save();closeModal('settings-modal');renderCalendar();
+  toast('Settings saved! 💾');
+}
+
+// ===== GOOGLE CALENDAR =====
+function openGoogleSetup(){
+  document.getElementById('google-client-id').value=state.googleClientId||'';
+  openModal('google-modal');
+}
+
+function connectGoogle(){
+  const clientId=document.getElementById('google-client-id').value.trim();
+  if(!clientId){toast('Please enter your Client ID');return;}
+  state.googleClientId=clientId;save();
+  const scope='https://www.googleapis.com/auth/calendar.readonly';
+  const redirectUri=window.location.href.split('?')[0];
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}`;
+  window.open(url,'_blank','width=500,height=600');
+  toast('Google Auth window opened. After authorizing, come back and refresh! 🔗');
+}
+
+// ===== MODAL HELPERS =====
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
+
+// ===== TOAST =====
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ===== INIT =====
+load();
+if(state.appName&&state.appName!=='Home Sweet Home'){
+  document.querySelector('.logo').innerHTML=`<span>🏡</span> ${state.appName}`;
+  document.title=state.appName;
+}
+renderCalendar();
+</script>
+</body>
+</html>
